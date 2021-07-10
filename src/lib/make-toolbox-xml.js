@@ -4,6 +4,47 @@ const categorySeparator = '<sep gap="36"/>';
 
 const blockSeparator = '<sep gap="36"/>'; // At default scale, about 28px
 
+const constructors = function (){
+    return `
+    <category name="constructors" id="motion" colour="#4C97FF" secondaryColour="#3373CC">
+        <block type="constructors_int">
+            <value name="INT">
+                <shadow type="math_integer">
+                    <field name="NUM">0</field>
+                </shadow>
+            </value>
+        </block>
+        <block type="constructors_float">
+            <value name="FLOAT">
+                <shadow type="math_number">
+                    <field name="NUM">0</field>
+                </shadow>
+            </value>
+        </block>
+        ${(()=>{
+            let xml = "";
+            const args = ["X","Y","Z","W"];
+            for (let n=2;n<=4;n++){
+                xml += blockSeparator;
+                for (let m=1;m<=n;m++){
+                    xml += `<block type="constructors_vec${n}_${m}">`;
+                    for (let k=0;k<m;k++){
+                    xml += `
+                    <value name="${args[k]}">
+                        <shadow type="math_number">
+                            <field name="NUM">0</field>
+                        </shadow>
+                    </value>`;
+                    }
+                    xml += `</block>`;
+                }
+            }
+            return xml;
+        })()}
+    </category>
+    `;
+}
+
 /* eslint-disable no-unused-vars */
 const motion = function (isInitialSetup, isStage, targetId) {
     const stageSelected = ScratchBlocks.ScratchMsgs.translate(
@@ -753,6 +794,7 @@ const makeToolboxXML = function (isInitialSetup, isStage = true, targetId, categ
         }
         // return `undefined`
     };
+    const constructorsXML = moveCategory('constructors') || constructors(isInitialSetup, isStage, targetId);
     const motionXML = moveCategory('motion') || motion(isInitialSetup, isStage, targetId);
     const looksXML = moveCategory('looks') || looks(isInitialSetup, isStage, targetId, costumeName, backdropName);
     const soundXML = moveCategory('sound') || sound(isInitialSetup, isStage, targetId, soundName);
@@ -765,6 +807,7 @@ const makeToolboxXML = function (isInitialSetup, isStage = true, targetId, categ
 
     const everything = [
         xmlOpen,
+        constructorsXML, gap,
         motionXML, gap,
         looksXML, gap,
         soundXML, gap,
